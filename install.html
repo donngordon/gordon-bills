@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Get Gordon Bills</title>
+<meta name="theme-color" content="#0E1A2B">
+<link rel="icon" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0E1A2B;--ink2:#1B2A42;--gold:#B8975A;--gold2:#C9A668;--champ:#F4EEE3;--ivory:#FBF8F2;--text:#1F1B16;--muted:#8A8173;--line:#E8E1D4;
+    --serif:'Playfair Display',Georgia,serif;--sans:Lato,'Helvetica Neue',Arial,sans-serif;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--ink);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+  .page{max-width:520px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--champ)}
+  .hero{background:radial-gradient(circle at 50% 0%,#24375C,var(--ink) 72%);color:#fff;text-align:center;padding:calc(38px + var(--safe-top)) 24px 34px;border-bottom:3px solid var(--gold)}
+  .hero img{width:96px;height:96px;border-radius:24px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+  .kick{font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-top:20px}
+  h1{font-family:var(--serif);font-weight:600;font-size:32px;margin:8px 0 8px}
+  .hero p{color:#C9CFD8;font-size:15px;line-height:1.5;margin:0 auto;max-width:330px}
+  .body{padding:22px 18px calc(40px + var(--safe-bot))}
+  .tabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+  .tabs button{flex:1;border:0;background:transparent;border-radius:999px;padding:12px;font:inherit;font-weight:900;font-size:15px;color:var(--muted);cursor:pointer}
+  .tabs button.on{background:var(--ink);color:var(--gold)}
+  .alert{margin-top:16px;background:#FFF4E5;border:1px solid #F0CF9C;color:#7A4B0C;border-radius:16px;padding:14px 16px;font-size:15px;line-height:1.45}
+  .alert b{color:#5C3705}
+  .step{display:flex;gap:14px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:14px;box-shadow:0 6px 18px rgba(14,26,43,.05)}
+  .num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center}
+  .st{flex:1;min-width:0}
+  .st h3{margin:4px 0 4px;font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink)}
+  .st p{margin:0;font-size:15px;line-height:1.45;color:#3A342C}
+  .st small{display:block;margin-top:6px;color:var(--muted);font-size:13px;line-height:1.4}
+  .pic{margin-top:12px;background:var(--ivory);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center;gap:10px}
+  .pic svg{display:block}
+  .gold{display:block;width:100%;border:0;border-radius:999px;padding:17px;font:inherit;font-weight:900;font-size:17px;color:var(--ink);background:linear-gradient(180deg,var(--gold2),var(--gold));box-shadow:0 10px 24px rgba(184,151,90,.35);cursor:pointer;text-align:center;text-decoration:none}
+  .open{margin-top:12px}
+  .code{margin-top:22px;background:var(--ink);border-radius:20px;padding:18px;color:#fff;text-align:center}
+  .code .l{font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
+  .code .v{font-size:24px;letter-spacing:4px;font-weight:900;margin:8px 0 12px}
+  .code button{background:transparent;border:1px solid rgba(184,151,90,.6);color:var(--gold);border-radius:999px;padding:10px 22px;font:inherit;font-weight:900;cursor:pointer}
+  .code p{color:#AEB6C2;font-size:13px;margin:12px 0 0;line-height:1.45}
+  .done{margin-top:22px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5}
+  .hide{display:none!important}
+  .row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px;color:#111;width:100%;max-width:280px}
+  .row.hl{border:2px solid var(--gold);box-shadow:0 0 0 4px rgba(184,151,90,.18);font-weight:700}
+  .row span{flex:1}
+  @media (min-width:600px){ .page{margin:30px auto;min-height:auto;border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)} }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hero">
+    <img src="icons/icon-192.png" alt="Gordon Bills app icon">
+    <div class="kick">The Gordon Family</div>
+    <h1>Get Gordon Bills</h1>
+    <p>Put our household bills app on your phone — with its own gold house icon. Takes about 30 seconds.</p>
+  </div>
+
+  <div class="body">
+    <div class="tabs"><button id="tIos" class="on">iPhone</button><button id="tAnd">Android</button></div>
+
+    <!-- iPhone -->
+    <div id="ios">
+      <div class="alert hide" id="inapp">
+        <b>You're inside the email app.</b> The icon can only be added from <b>Safari</b>. Tap the <b>compass</b> or <b>⋯</b> / <b>Share</b> button and choose <b>Open in Safari</b>, then follow the steps below.
+      </div>
+
+      <div class="step"><div class="num">1</div><div class="st">
+        <h3>Open the app in Safari</h3>
+        <p>Tap the gold button. It opens our bills and signs you in automatically.</p>
+        <a class="gold open" id="openBtn1" href="./">Open Gordon Bills</a>
+      </div></div>
+
+      <div class="step"><div class="num">2</div><div class="st">
+        <h3>Tap Share</h3>
+        <p>Tap the <b>Share</b> button at the bottom of Safari.</p>
+        <small>On newer iPhones, tap <b>⋯</b> at the bottom right first, then <b>Share</b>. On iPad it's at the top right.</small>
+        <div class="pic">
+          <svg width="64" height="64" viewBox="0 0 64 64" aria-label="Share icon"><rect x="2" y="2" width="60" height="60" rx="16" fill="#fff" stroke="#B8975A" stroke-width="2.5"/><path d="M32 14v24M24 21l8-8 8 8" fill="none" stroke="#0A84FF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 29h-3v20h26V29h-3" fill="none" stroke="#0A84FF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span style="font-size:22px;color:#B8975A">or</span>
+          <svg width="64" height="64" viewBox="0 0 64 64" aria-label="More button"><rect x="2" y="2" width="60" height="60" rx="16" fill="#fff" stroke="#E8E1D4" stroke-width="2.5"/><circle cx="20" cy="32" r="3.6" fill="#0A84FF"/><circle cx="32" cy="32" r="3.6" fill="#0A84FF"/><circle cx="44" cy="32" r="3.6" fill="#0A84FF"/></svg>
+        </div>
+      </div></div>
+
+      <div class="step"><div class="num">3</div><div class="st">
+        <h3>Tap "Add to Home Screen"</h3>
+        <p>Scroll down the list to find it. If you don't see it, tap <b>View More</b>.</p>
+        <div class="pic" style="flex-direction:column">
+          <div class="row"><span>Add to Favorites</span>☆</div>
+          <div class="row hl"><span>Add to Home Screen</span><svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#111" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        </div>
+      </div></div>
+
+      <div class="step"><div class="num">4</div><div class="st">
+        <h3>Tap "Add"</h3>
+        <p>If you see <b>Open as Web App</b>, leave it switched on. Then tap <b>Add</b> at the top right.</p>
+        <div class="pic"><img src="icons/icon-192.png" width="60" height="60" style="border-radius:14px" alt=""><span style="font-size:15px;font-weight:700;color:#0E1A2B">Gordon Bills</span></div>
+        <small>Then open it from the new gold house icon on your home screen.</small>
+      </div></div>
+    </div>
+
+    <!-- Android -->
+    <div id="and" class="hide">
+      <div class="alert hide" id="inappA">
+        <b>You're inside the email app.</b> Tap <b>⋮</b> at the top right and choose <b>Open in Chrome</b>, then follow the steps below.
+      </div>
+      <div class="step"><div class="num">1</div><div class="st">
+        <h3>Open the app in Chrome</h3>
+        <p>Tap the gold button. It opens our bills and signs you in automatically.</p>
+        <a class="gold open" id="openBtn2" href="./">Open Gordon Bills</a>
+      </div></div>
+      <div class="step"><div class="num">2</div><div class="st">
+        <h3>Tap Install</h3>
+        <p>Tap the gold <b>Install</b> button on the "Get the app" card in the app — or tap <b>⋮</b> at the top right of Chrome and choose <b>Install app</b> (or <b>Add to Home screen</b>).</p>
+      </div></div>
+      <div class="step"><div class="num">3</div><div class="st">
+        <h3>Tap Install again to confirm</h3>
+        <p>The gold <b>Gordon Bills</b> icon appears with your apps.</p>
+      </div></div>
+    </div>
+
+    <div class="code" id="codeBox">
+      <div class="l">Our family code</div>
+      <div class="v" id="codeV">GB-••••-••••</div>
+      <button id="copy">Copy code</button>
+      <p>Only needed if the app ever asks. On iPhone, the icon can ask once the first time — tap <b>Paste code</b> there.</p>
+    </div>
+
+    <div class="done">Already installed? Just tap the gold house icon on your home screen.<br>Need help? Reply to any Gordon Bills email.</div>
+  </div>
+</div>
+<script>
+(function(){
+  function $(id){ return document.getElementById(id); }
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/.test(ua);
+  var inApp = /FBAN|FBAV|Instagram|Outlook|GSA\/|Line\/|; wv\)/.test(ua) || (isIOS && !/Safari\//.test(ua));
+  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var m = location.search.match(/[?&]k=([^&]+)/) || location.hash.match(/k=([^&]+)/);
+  var code = m ? decodeURIComponent(m[1]) : '';
+  try { if (code) localStorage.setItem('gb_code', code); else code = localStorage.getItem('gb_code') || ''; } catch (e) {}
+  var appUrl = './' + (code ? '?k=' + encodeURIComponent(code) : '');
+  if (standalone) { location.replace(appUrl); return; }
+  $('openBtn1').href = appUrl; $('openBtn2').href = appUrl;
+  if (code) $('codeV').textContent = code; else $('codeBox').classList.add('hide');
+  $('copy').onclick = function(){
+    var done = function(){ $('copy').textContent = 'Copied ✓'; setTimeout(function(){ $('copy').textContent = 'Copy code'; }, 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, function(){ prompt('Copy this code:', code); });
+    else prompt('Copy this code:', code);
+  };
+  function tab(ios){ $('tIos').classList.toggle('on', ios); $('tAnd').classList.toggle('on', !ios); $('ios').classList.toggle('hide', !ios); $('and').classList.toggle('hide', ios); }
+  $('tIos').onclick = function(){ tab(true); }; $('tAnd').onclick = function(){ tab(false); };
+  tab(!isAndroid);
+  if (inApp && isIOS) $('inapp').classList.remove('hide');
+  if (inApp && isAndroid) $('inappA').classList.remove('hide');
+})();
+</script>
+</body>
+</html>
