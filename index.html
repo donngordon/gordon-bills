@@ -27,7 +27,7 @@
   html,body{margin:0;background:var(--champ);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
   button{font-family:inherit;color:inherit}
   .hide{display:none !important}
-  .wrap{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(110px + var(--safe-bot))}
+  .wrap{max-width:560px;margin:0 auto;padding-bottom:calc(110px + var(--safe-bot))}
 
   /* Header */
   .top{background:var(--ink);color:#fff;padding:calc(18px + var(--safe-top)) 22px 26px;border-bottom:3px solid var(--gold);position:relative}
@@ -134,6 +134,25 @@
   .f input:focus,.f textarea:focus{border-color:var(--gold);background:#fff}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .err{color:#8C2F39;text-align:center;font-size:14px;margin-top:12px;min-height:18px}
+
+  /* Safari polish */
+  input,textarea,button,select{-webkit-appearance:none;appearance:none;border-radius:inherit}
+  .f input,.f textarea{border-radius:12px}
+  .f input[type=date]{min-height:48px;display:block;text-align:left}
+  .f input[type=date]::-webkit-date-and-time-value{text-align:left}
+  .wrap,.gate{min-height:100vh;min-height:100dvh}
+  body{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-y:none}
+
+  /* Computers & tablets: the app sits in an elegant frame */
+  @media (min-width:700px){
+    html,body{background:radial-gradient(1200px 700px at 50% -10%,#22355A 0%,var(--ink) 60%) fixed,var(--ink)}
+    .wrap{margin:36px auto;min-height:calc(100vh - 72px);border-radius:28px;overflow:hidden;background:var(--champ);box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px rgba(184,151,90,.35)}
+    .dock{left:50%;right:auto;width:560px;transform:translateX(-50%);bottom:36px;border-radius:0 0 28px 28px}
+    .gate{background:transparent}
+    .gate > *{position:relative}
+    .sheet .scard{border-radius:24px;margin-bottom:36px}
+    .sheet{align-items:center}
+  }
 
   /* Code screen */
   .gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:radial-gradient(circle at 50% 30%,var(--ink2),var(--ink) 70%);color:#fff;text-align:center}
