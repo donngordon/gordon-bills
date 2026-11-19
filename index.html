@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gordon Bills</title>
+<meta name="theme-color" content="#0E1A2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gordon Bills">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1A2B; --ink2:#1B2A42; --gold:#B8975A; --gold2:#C9A668; --goldDeep:#8E713C;
+    --champ:#F4EEE3; --ivory:#FBF8F2; --text:#1F1B16; --muted:#8A8173; --line:#E8E1D4;
+    --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:Lato,'Helvetica Neue',Arial,sans-serif;
+    --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--champ);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;color:inherit}
+  .hide{display:none !important}
+  .wrap{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(110px + var(--safe-bot))}
+
+  /* Header */
+  .top{background:var(--ink);color:#fff;padding:calc(18px + var(--safe-top)) 22px 26px;border-bottom:3px solid var(--gold);position:relative}
+  .kick{font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+  .title{font-family:var(--serif);font-size:28px;margin-top:6px;letter-spacing:.2px}
+  .iconbtn{position:absolute;right:16px;top:calc(18px + var(--safe-top));width:42px;height:42px;border-radius:50%;border:1px solid rgba(184,151,90,.45);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .iconbtn svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8}
+  .iconbtn.spin svg{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .back{left:12px;right:auto}
+
+  /* Hero */
+  .hero{margin:-1px 0 0;background:linear-gradient(160deg,var(--ink2),var(--ink));color:#fff;padding:6px 22px 28px}
+  .hero .lbl{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+  .hero .big{font-family:var(--serif);font-size:52px;line-height:1.05;margin-top:8px}
+  .hero .big.clear{font-size:38px}
+  .hero .next{margin-top:12px;font-size:14px;color:#C9CFD8;line-height:1.5}
+  .hero .next b{color:#fff;font-weight:700}
+
+  /* Sections */
+  .sec{padding:0 16px}
+  .sech{display:flex;justify-content:space-between;align-items:baseline;margin:26px 6px 12px}
+  .sech h2{font-family:var(--serif);font-size:20px;font-weight:600;margin:0;color:var(--ink)}
+  .sech span{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .empty{background:#fff;border:1px dashed var(--line);border-radius:18px;padding:18px;text-align:center;color:var(--muted);font-size:14px}
+
+  /* Bill card */
+  .card{display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(14,26,43,.05),0 8px 24px rgba(14,26,43,.06);cursor:pointer;border:1px solid transparent;transition:transform .12s ease,border-color .12s}
+  .card:active{transform:scale(.985);border-color:var(--gold)}
+  .tile{flex:0 0 48px;height:48px;border-radius:14px;background:var(--ivory);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:23px}
+  .mid{flex:1;min-width:0}
+  .nm{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub{font-size:13px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub.late{color:#8C2F39;font-weight:700}
+  .sub.soon{color:#8A5F0E;font-weight:700}
+  .rt{text-align:right;flex:0 0 auto}
+  .amt{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink)}
+  .pill{display:inline-block;margin-top:5px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:1.6px}
+
+  /* Fixed action */
+  .dock{position:fixed;left:0;right:0;bottom:0;padding:14px 16px calc(14px + var(--safe-bot));background:linear-gradient(180deg,rgba(244,238,227,0),var(--champ) 35%);z-index:5}
+  .dock .in{max-width:528px;margin:0 auto}
+  .gold{width:100%;padding:18px;border:0;border-radius:999px;background:var(--gold);color:var(--ink);font-size:16px;font-weight:700;letter-spacing:.6px;cursor:pointer;box-shadow:0 10px 24px rgba(184,151,90,.4)}
+  .gold:disabled{opacity:.6}
+  .ghost{display:block;margin:12px auto 0;background:none;border:0;color:var(--goldDeep);font-size:14px;letter-spacing:.3px;cursor:pointer}
+
+  /* Pay view */
+  .pay .body{padding:20px 18px 10px}
+  .phero{background:#fff;border-radius:22px;text-align:center;padding:24px 16px;box-shadow:0 8px 28px rgba(14,26,43,.08);margin-top:-18px;position:relative}
+  .phero .m{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+  .phero .a{font-family:var(--serif);font-size:48px;color:var(--ink);line-height:1.1;margin-top:6px}
+  .phero .d{font-size:14px;color:var(--muted);margin-top:4px}
+  .lab{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:24px 2px 10px}
+  .scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{flex:0 0 auto;padding:12px 18px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:15px;cursor:pointer;user-select:none;white-space:nowrap}
+  .chip.on{border-color:var(--ink);background:var(--ink);color:#fff}
+  .chip.small{padding:9px 14px;font-size:13px}
+  .people{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .person{padding:16px 8px;border-radius:16px;border:1.5px solid var(--line);background:#fff;text-align:center;font-size:16px;font-weight:700;cursor:pointer}
+  .person .av{width:40px;height:40px;border-radius:50%;margin:0 auto 8px;background:var(--ivory);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;color:var(--goldDeep)}
+  .person.on{border-color:var(--gold);background:#FBF5EA;box-shadow:0 0 0 3px rgba(184,151,90,.2)}
+  .person.on .av{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .money{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:18px}
+  .money:focus-within{border-color:var(--gold)}
+  .money span{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-family:var(--serif);font-size:30px;color:var(--muted)}
+  .money input{width:100%;border:0;background:transparent;padding:18px 18px 18px 46px;font-family:var(--serif);font-size:34px;color:var(--ink);outline:none;border-radius:18px}
+  .hint{font-size:13px;color:var(--muted);margin:10px 4px 0;min-height:18px}
+  .hint.good{color:#2F6B4F;font-weight:700}
+  .status{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .st{padding:14px 10px;border-radius:14px;border:1.5px solid var(--line);background:#fff;text-align:center;font-size:15px;cursor:pointer}
+  .st i{font-style:normal;display:block;font-size:20px;margin-bottom:4px}
+  .st.on{border-color:var(--gold);background:#FBF5EA;font-weight:700;box-shadow:0 0 0 3px rgba(184,151,90,.18)}
+  details{margin-top:24px;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid var(--line)}
+  summary{cursor:pointer;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none} summary::after{content:'+';color:var(--gold);font-size:22px;line-height:1}
+  details[open] summary::after{content:'\2013'}
+  .f label{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+  .f input,.f textarea{width:100%;padding:13px 14px;font-size:16px;font-family:inherit;color:var(--text);border:1px solid var(--line);border-radius:12px;background:var(--ivory);outline:none}
+  .f input:focus,.f textarea:focus{border-color:var(--gold);background:#fff}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .err{color:#8C2F39;text-align:center;font-size:14px;margin-top:12px;min-height:18px}
+
+  /* Code screen */
+  .gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:radial-gradient(circle at 50% 30%,var(--ink2),var(--ink) 70%);color:#fff;text-align:center}
+  .gate img{width:96px;height:96px;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+  .gate h1{font-family:var(--serif);font-weight:600;font-size:30px;margin:22px 0 6px}
+  .gate p{color:#C9CFD8;font-size:15px;line-height:1.5;margin:0 0 26px;max-width:320px}
+  .gate input{width:100%;max-width:320px;padding:16px;border-radius:14px;border:1px solid rgba(184,151,90,.5);background:rgba(255,255,255,.06);color:#fff;font-size:20px;letter-spacing:3px;text-align:center;text-transform:uppercase;outline:none}
+  .gate input::placeholder{color:rgba(255,255,255,.35);letter-spacing:2px}
+  .gate .gold{max-width:320px;margin-top:16px}
+
+  /* Success overlay */
+  .done{position:fixed;inset:0;background:rgba(14,26,43,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;color:#fff;text-align:center;padding:30px;animation:fade .2s ease}
+  .done .ring{width:96px;height:96px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+  .done .ring svg{width:44px;height:44px;stroke:var(--gold);fill:none;stroke-width:2.4}
+  .done h3{font-family:var(--serif);font-size:28px;font-weight:600;margin:22px 0 8px}
+  .done p{color:#C9CFD8;font-size:15px;margin:0;line-height:1.5;max-width:320px}
+  @keyframes fade{from{opacity:0}} @keyframes pop{from{transform:scale(.6);opacity:0}}
+  .toast{position:fixed;left:50%;bottom:calc(120px + var(--safe-bot));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .skel{height:80px;border-radius:18px;background:linear-gradient(90deg,#fff,#F7F2EA,#fff);background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:10px}
+  @keyframes sh{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- Family code -->
+<div id="gate" class="gate hide">
+  <img src="icons/icon-192.png" alt="">
+  <h1>Gordon Bills</h1>
+  <p>Enter the family code from the welcome email to open our household bills.</p>
+  <input id="codeIn" placeholder="GB-XXXX-XXXX" autocomplete="off" autocapitalize="characters">
+  <button class="gold" id="codeGo">Open</button>
+  <div class="err" id="codeErr"></div>
+</div>
+
+<!-- Home -->
+<div id="home" class="wrap hide">
+  <div class="top">
+    <div class="kick">The Gordon Family</div>
+    <div class="title">Household Bills</div>
+    <button class="iconbtn" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4"/></svg></button>
+  </div>
+  <div class="hero">
+    <div class="lbl">Still owed</div>
+    <div class="big" id="owed">&nbsp;</div>
+    <div class="next" id="next"></div>
+  </div>
+  <div class="sec">
+    <div class="sech"><h2>Needs attention</h2><span id="openCount"></span></div>
+    <div id="openList"><div class="skel"></div><div class="skel"></div></div>
+    <div class="sech"><h2>Paid this month</h2><span id="paidSum"></span></div>
+    <div id="paidList"></div>
+    <div class="sech"><h2>Coming up</h2><span>Next 45 days</span></div>
+    <div id="upList"></div>
+  </div>
+  <div class="dock"><div class="in">
+    <button class="gold" id="recordBtn">+ Record a payment</button>
+  </div></div>
+</div>
+
+<!-- Pay -->
+<div id="pay" class="wrap pay hide">
+  <div class="top" style="text-align:center;padding-bottom:40px">
+    <button class="iconbtn back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="kick">Record a payment</div>
+    <div class="title" id="payTitle">Gordon Bills</div>
+  </div>
+  <div class="body">
+    <div class="phero"><div class="m" id="pm"></div><div class="a" id="pa"></div><div class="d" id="pd"></div><div id="pb"></div></div>
+
+    <div id="pickers">
+      <div class="lab">Which bill?</div><div class="scroll" id="billChips"></div>
+      <div class="f hide" id="otherBox"><label>Bill name</label><input id="newBill" placeholder="e.g. Internet, Phone, Car insurance"></div>
+      <div class="lab">Which month?</div><div class="scroll" id="monthChips"></div>
+    </div>
+
+    <div class="lab">Who paid?</div>
+    <div class="people" id="people"></div>
+    <div class="f hide" id="whoBox"><input id="whoOther" placeholder="Name"></div>
+
+    <div class="lab">How much was paid?</div>
+    <div class="money"><span>$</span><input id="paidAmt" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+    <div class="chips" style="margin-top:10px" id="quick"></div>
+    <div class="hint" id="hint"></div>
+
+    <div class="lab">Status</div><div class="status" id="status"></div>
+    <div class="lab">How did you pay?</div><div class="chips" id="method"></div>
+
+    <details id="more"><summary>Bill amount, dates &amp; confirmation</summary><div class="f">
+      <div class="row2"><div><label>Amount due</label><input id="amount" type="number" step="0.01" inputmode="decimal"></div>
+      <div><label>Due date</label><input id="due" type="date"></div></div>
+      <div class="row2"><div><label>Date paid</label><input id="paidDate" type="date"></div>
+      <div><label>Confirmation #</label><input id="conf" autocomplete="off"></div></div>
+      <label>Notes</label><textarea id="notes" rows="2"></textarea>
+    </div></details>
+    <div class="err" id="payErr"></div>
+  </div>
+  <div class="dock"><div class="in">
+    <button class="gold" id="saveBtn">Save &amp; send confirmation</button>
+  </div></div>
+</div>
+
+<div id="done" class="done hide">
+  <div class="ring"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <h3 id="doneT">Saved</h3>
+  <p id="doneP">A confirmation email is on its way to both of us.</p>
+</div>
+
+<script>
+(function(){
+  var API = 'https://script.google.com/macros/s/AKfycbzk4y9Djrjj2gFKm6fz4DwHKQi6lYaM0-32JL9je1rNfHRpxECRSne5tpWM5h80ZsCa/exec';
+  var KEY = 'gb_code';
+  var ICON = {'Unpaid':'⏳','Paid':'✅','Partial':'🟠','Past due':'🔴','Carried over':'↪️'};
+  var COLOR = {'Unpaid':['#F7EEDB','#8A5F0E'],'Paid':['#E4EFE8','#2F6B4F'],'Partial':['#F6E6DA','#A4572B'],'Past due':['#F5E1E3','#8C2F39'],'Carried over':['#ECEDEF','#5B6472']};
+  var D = null, code = '', cur = null, other = false, status = '', method = '', payer = '';
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function money(n){ return n ? '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'; }
+  function store(k, v){ try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function load(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function toast(t){ var el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.appendChild(el); setTimeout(function(){ el.remove(); }, 2600); }
+  function show(v){ ['gate','home','pay'].forEach(function(id){ $(id).classList.toggle('hide', id !== v); }); window.scrollTo(0,0); }
+  function today(){ return D && D.today ? D.today : new Date().toLocaleDateString('en-CA'); }
+  function daysTo(iso){ if (!iso) return null; var a = iso.split('-'), b = today().split('-');
+    return Math.round((Date.UTC(+a[0],+a[1]-1,+a[2]) - Date.UTC(+b[0],+b[1]-1,+b[2])) / 86400000); }
+  function niceDate(iso){ if (!iso) return ''; var p = iso.split('-'); return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
+  function label(mk){ return new Date(+mk.slice(0,4), +mk.slice(5,7)-1, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'}); }
+  function info(name){ var t = (D.billTypes || []).filter(function(b){ return b.name === name; })[0]; return t || {name:name, short:name, icon:'🧾'}; }
+  function owe(b){ return b.status === 'Partial' ? Math.max(0, (b.amount||0) - (b.paidAmt||0)) : (b.amount||0); }
+  function dueText(b){ var d = daysTo(b.dueIso);
+    if (d === null) return b.amount ? 'Due date not set' : 'Amount not in yet';
+    if (d < 0) return (-d) + ' day' + (d === -1 ? '' : 's') + ' late · ' + niceDate(b.dueIso);
+    if (d === 0) return 'Due today';
+    if (d === 1) return 'Due tomorrow · ' + niceDate(b.dueIso);
+    return 'Due ' + niceDate(b.dueIso) + ' · in ' + d + ' days'; }
+
+  /* ---------- API ---------- */
+  function api(params){
+    var opts = params.api === 'save'
+      ? { method:'POST', body: JSON.stringify(params), credentials:'omit', redirect:'follow' }
+      : { credentials:'omit', redirect:'follow' };
+    var url = params.api === 'save' ? API : API + '?api=bills&t=' + encodeURIComponent(params.t);
+    return fetch(url, opts).then(function(r){ return r.json(); });
+  }
+  function refresh(quiet){
+    $('refresh').classList.add('spin');
+    return api({ api:'bills', t:code }).then(function(j){
+      $('refresh').classList.remove('spin');
+      if (!j.ok) { store(KEY, null); gate(j.error); return; }
+      D = j.data; renderHome(); if (!quiet) show('home');
+    }).catch(function(){ $('refresh').classList.remove('spin'); toast('No connection — try again in a moment'); });
+  }
+
+  /* ---------- Gate ---------- */
+  function gate(msg){ show('gate'); $('codeErr').textContent = msg || ''; }
+  $('codeGo').onclick = function(){
+    var c = $('codeIn').value.trim(); if (!c) return;
+    $('codeGo').disabled = true; $('codeGo').textContent = 'Checking…';
+    api({ api:'bills', t:c }).then(function(j){
+      $('codeGo').disabled = false; $('codeGo').textContent = 'Open';
+      if (!j.ok) { $('codeErr').textContent = j.error || 'That code did not work.'; return; }
+      code = c; store(KEY, c); D = j.data; renderHome(); show('home');
+    }).catch(function(){ $('codeGo').disabled = false; $('codeGo').textContent = 'Open'; $('codeErr').textContent = 'No connection — try again.'; });
+  };
+
+  /* ---------- Home ---------- */
+  function cardHtml(b, mode){
+    var t = info(b.bill), sub, cls = '', amt, st = b.status;
+    if (mode === 'paid') { sub = 'Paid' + (b.paidBy ? ' by ' + b.paidBy : '') + (b.method ? ' · ' + b.method : '') + (b.paidDate ? ' · ' + niceDate(b.paidDate) : ''); amt = money(b.paidAmt || b.amount); }
+    else { var d = daysTo(b.dueIso); sub = dueText(b); if (d !== null && d < 0) cls = 'late'; else if (d !== null && d <= 3) cls = 'soon';
+      if (b.status === 'Partial') sub = money(b.paidAmt) + ' paid' + (b.paidBy ? ' by ' + b.paidBy : '') + ' · ' + sub;
+      amt = b.amount ? money(owe(b)) : '—'; }
+    var pill = st ? '<div><span class="pill" style="background:' + COLOR[st][0] + ';color:' + COLOR[st][1] + '">' + st.toUpperCase() + '</span></div>' : '';
+    return '<div class="card" data-key="' + esc(b.key) + '"><div class="tile">' + t.icon + '</div><div class="mid"><div class="nm">' + esc(t.short) +
+      ' <span style="font-family:var(--sans);font-size:12px;color:var(--muted);font-weight:400">' + esc(label(b.mk)) + '</span></div><div class="sub ' + cls + '">' + esc(sub) + '</div></div>' +
+      '<div class="rt"><div class="amt">' + amt + '</div>' + pill + '</div></div>';
+  }
+  function renderHome(){
+    var bills = D.bills, mk = D.thisMonth;
+    var open = bills.filter(function(b){ return ['Unpaid','Partial','Past due'].indexOf(b.status) >= 0; });
+    open.sort(function(a,b){ var x = daysTo(a.dueIso), y = daysTo(b.dueIso); if (x === null) x = 9999; if (y === null) y = 9999; return x - y; });
+    var total = open.reduce(function(s,b){ return s + owe(b); }, 0);
+    $('owed').textContent = total < 0.005 ? 'All clear ✨' : money(total);
+    $('owed').classList.toggle('clear', total < 0.005);
+    var nxt = open.filter(function(b){ return b.dueIso; })[0];
+    $('next').innerHTML = nxt ? 'Next up: <b>' + info(nxt.bill).icon + ' ' + esc(info(nxt.bill).short) + ' ' + money(owe(nxt)) + '</b> · ' + esc(dueText(nxt)) :
+      (open.length ? open.length + ' bill' + (open.length > 1 ? 's' : '') + ' waiting for an amount or date' : 'Every bill is paid. Beautiful.');
+    $('openCount').textContent = open.length ? open.length + ' open' : '';
+    $('openList').innerHTML = open.length ? open.map(function(b){ return cardHtml(b,'open'); }).join('') : '<div class="empty">Nothing needs attention ✨</div>';
+    var paid = bills.filter(function(b){ return (b.status === 'Paid' || b.status === 'Partial') && b.paidDate && b.paidDate.slice(0,7) === mk; });
+    paid.sort(function(a,b){ return a.paidDate < b.paidDate ? 1 : -1; });
+    var paidTotal = paid.reduce(function(s,b){ return s + (b.paidAmt || 0); }, 0);
+    $('paidSum').textContent = paidTotal ? money(paidTotal) : '';
+    $('paidList').innerHTML = paid.length ? paid.map(function(b){ return cardHtml(b,'paid'); }).join('') : '<div class="empty">No payments recorded yet this month</div>';
+    var up = bills.filter(function(b){ var d = daysTo(b.dueIso); return !b.status && b.amount && d !== null && d >= 0 && d <= 45; });
+    up.sort(function(a,b){ return a.dueIso < b.dueIso ? -1 : 1; });
+    $('upList').innerHTML = up.length ? up.map(function(b){ return cardHtml(b,'up'); }).join('') : '<div class="empty">Nothing else due in the next 45 days</div>';
+    [].forEach.call(document.querySelectorAll('#home .card'), function(c){ c.onclick = function(){ openPay(c.getAttribute('data-key'), false); }; });
+  }
+  $('refresh').onclick = function(){ refresh(true).then(function(){ toast('Up to date'); }); };
+  $('recordBtn').onclick = function(){
+    var open = D.bills.filter(function(b){ return ['Unpaid','Partial','Past due'].indexOf(b.status) >= 0; });
+    open.sort(function(a,b){ return (a.dueIso||'9') < (b.dueIso||'9') ? -1 : 1; });
+    openPay(open[0] ? open[0].key : D.thisMonth + '|' + D.billTypes[0].name, true);
+  };
+  $('backBtn').onclick = function(){ renderHome(); show('home'); };
+
+  /* ---------- Pay ---------- */
+  function find(key){ return D.bills.filter(function(b){ return b.key === key; })[0] || null; }
+  function openPay(key, pickers){
+    other = false; $('otherBox').classList.add('hide'); $('newBill').value = ''; $('payErr').textContent = '';
+    cur = { key:key, mk:key.slice(0,7), bill:key.slice(8) };
+    $('pickers').classList.toggle('hide', !pickers);
+    fill(); show('pay');
+  }
+  function allNames(){ var n = D.billTypes.map(function(b){ return b.name; }); D.bills.forEach(function(b){ if (n.indexOf(b.bill) < 0) n.push(b.bill); }); return n; }
+  function renderPickers(){
+    var bc = $('billChips'); bc.innerHTML = '';
+    allNames().concat(['__other']).forEach(function(n){
+      var d = document.createElement('div'), t = n === '__other' ? null : info(n);
+      d.className = 'chip' + ((n === '__other' ? other : (!other && n === cur.bill)) ? ' on' : '');
+      d.textContent = n === '__other' ? '+ Other bill' : t.icon + '  ' + t.short;
+      d.onclick = function(){ other = n === '__other'; if (!other) cur.bill = n; cur.key = cur.mk + '|' + cur.bill; $('otherBox').classList.toggle('hide', !other); fill(); };
+      bc.appendChild(d);
+    });
+    var mc = $('monthChips'); mc.innerHTML = '';
+    var base = D.thisMonth, months = [];
+    for (var i = -2; i <= 2; i++) { var y = +base.slice(0,4), m = +base.slice(5,7) + i; while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; } months.push(y + '-' + (m < 10 ? '0' : '') + m); }
+    if (months.indexOf(cur.mk) < 0) months.push(cur.mk);
+    months.forEach(function(mk){ var b = find(mk + '|' + cur.bill), d = document.createElement('div');
+      d.className = 'chip small' + (mk === cur.mk ? ' on' : '');
+      d.innerHTML = (b && b.status ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;background:' + COLOR[b.status][1] + '"></span>' : '') + label(mk);
+      d.onclick = function(){ cur.mk = mk; cur.key = mk + '|' + cur.bill; fill(); };
+      mc.appendChild(d); });
+    var on = mc.querySelector('.on'); if (on && on.scrollIntoView) on.scrollIntoView({inline:'center', block:'nearest'});
+  }
+  function fill(){
+    var b = other ? null : find(cur.key), t = other ? {icon:'🧾', short:$('newBill').value || 'New bill'} : info(cur.bill);
+    $('payTitle').textContent = t.icon + '  ' + t.short;
+    $('pm').textContent = t.short + ' · ' + label(cur.mk);
+    $('pa').textContent = b && b.amount ? money(owe(b)) : '—';
+    $('pd').textContent = b ? (b.status === 'Partial' ? money(b.paidAmt) + ' already paid · ' : '') + dueText(b) : 'New bill';
+    $('pb').innerHTML = b && b.status ? '<span class="pill" style="margin-top:10px;background:' + COLOR[b.status][0] + ';color:' + COLOR[b.status][1] + '">' + b.status.toUpperCase() + '</span>' : '';
+    $('amount').value = (b && b.amount) || ''; $('due').value = (b && b.dueIso) || '';
+    $('paidAmt').value = ''; $('paidDate').value = ''; $('conf').value = (b && b.conf) || ''; $('notes').value = (b && b.notes) || '';
+    setPayer(''); setMethod((b && b.method) || ''); setStatus(''); renderQuick(b); renderPickers();
+  }
+  function renderQuick(b){
+    var q = $('quick'); q.innerHTML = '';
+    if (!b || !b.amount) return;
+    var left = owe(b);
+    [['Full amount ' + money(left), left]].forEach(function(x){ var d = document.createElement('div'); d.className = 'chip small'; d.textContent = x[0];
+      d.onclick = function(){ $('paidAmt').value = x[1].toFixed(2); onAmt(); }; q.appendChild(d); });
+  }
+  function buildStatic(){
+    var pp = $('people'); pp.innerHTML = '';
+    D.people.concat(['Other']).forEach(function(p){ var d = document.createElement('div'); d.className = 'person'; d.setAttribute('data-v', p);
+      d.innerHTML = '<div class="av">' + (p === 'Other' ? '+' : esc(p.charAt(0))) + '</div>' + esc(p);
+      d.onclick = function(){ if (p === 'Other') { setPayer($('whoOther').value || '', true); $('whoOther').focus(); } else setPayer(p); }; pp.appendChild(d); });
+    var ss = $('status'); ss.innerHTML = '';
+    D.statuses.forEach(function(s){ var d = document.createElement('div'); d.className = 'st'; d.setAttribute('data-v', s); d.innerHTML = '<i>' + ICON[s] + '</i>' + s;
+      d.onclick = function(){ setStatus(s, true); }; ss.appendChild(d); });
+    var mm = $('method'); mm.innerHTML = '';
+    D.methods.forEach(function(m){ var d = document.createElement('div'); d.className = 'chip small'; d.setAttribute('data-v', m); d.textContent = m;
+      d.onclick = function(){ setMethod(method === m ? '' : m); }; mm.appendChild(d); });
+  }
+  function setPayer(p, isOther){ payer = p; var known = D.people.indexOf(p) >= 0, showO = !!isOther || (p && !known);
+    $('whoBox').classList.toggle('hide', !showO); if (p && !known) $('whoOther').value = p;
+    [].forEach.call($('people').children, function(c){ var v = c.getAttribute('data-v'); c.classList.toggle('on', v === p || (v === 'Other' && showO)); }); }
+  $('whoOther').oninput = function(){ payer = $('whoOther').value; };
+  function setMethod(m){ method = m; [].forEach.call($('method').children, function(c){ c.classList.toggle('on', c.getAttribute('data-v') === m); }); }
+  function setStatus(s, user){ status = s; [].forEach.call($('status').children, function(c){ c.classList.toggle('on', c.getAttribute('data-v') === s); });
+    var b = other ? null : find(cur.key);
+    if (user && s === 'Paid' && !$('paidAmt').value && b && b.amount) $('paidAmt').value = owe(b).toFixed(2);
+    hint(); }
+  function onAmt(){ var b = other ? null : find(cur.key), paid = Number($('paidAmt').value) || 0, due = Number($('amount').value) || 0;
+    var already = b && b.status === 'Partial' ? (b.paidAmt || 0) : 0;
+    if (paid && status !== 'Carried over') setStatus(!due || paid + already + 0.005 >= due ? 'Paid' : 'Partial');
+    hint(); }
+  $('paidAmt').oninput = onAmt; $('amount').oninput = hint;
+  function hint(){ var b = other ? null : find(cur.key), paid = Number($('paidAmt').value) || 0, due = Number($('amount').value) || 0;
+    var already = b && b.status === 'Partial' ? (b.paidAmt || 0) : 0, h = $('hint');
+    h.className = 'hint';
+    if (!paid) { h.textContent = ''; return; }
+    if (!due) { h.textContent = 'Bill amount not set yet — add it under the details below.'; return; }
+    if (paid + already + 0.005 >= due) { h.className = 'hint good'; h.textContent = 'Covers the full bill ✓'; }
+    else h.textContent = money(due - paid - already) + ' will still be due (partial payment)'; }
+  $('newBill').oninput = function(){ $('payTitle').textContent = '🧾  ' + ($('newBill').value || 'New bill'); $('pm').textContent = ($('newBill').value || 'New bill') + ' · ' + label(cur.mk); };
+
+  $('saveBtn').onclick = function(){
+    var err = $('payErr'); err.textContent = '';
+    if (other && !$('newBill').value.trim()) { err.textContent = 'Type the bill name first.'; return; }
+    if (!status) { err.textContent = 'Choose a status, or enter how much was paid.'; return; }
+    if ((status === 'Paid' || status === 'Partial') && !payer) { err.textContent = 'Tap who paid.'; return; }
+    var b = other ? null : find(cur.key);
+    var paid = Number($('paidAmt').value) || 0;
+    var total = b && b.status === 'Partial' && paid ? (b.paidAmt || 0) + paid : paid;   // second payment adds up
+    var body = { api:'save', t:code, key: cur.key, month: cur.mk, newBill: other ? $('newBill').value.trim() : '',
+      status: status, paidBy: payer, method: method, amount: $('amount').value, due: $('due').value,
+      paidAmt: total ? total.toFixed(2) : (b && b.paidAmt ? String(b.paidAmt) : ''), paidDate: $('paidDate').value || (total ? today() : ''),
+      conf: $('conf').value, notes: $('notes').value };
+    $('saveBtn').disabled = true; $('saveBtn').textContent = 'Saving…';
+    api(body).then(function(j){
+      $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save & send confirmation';
+      if (!j.ok) { err.textContent = j.error || 'Could not save. Try again.'; return; }
+      D = j.data;
+      var nb = find(j.result.key) || {}, t = info(nb.bill || cur.bill);
+      $('doneT').textContent = nb.status === 'Paid' ? 'Payment confirmed' : nb.status === 'Partial' ? 'Partial payment saved' : 'Saved';
+      $('doneP').textContent = (payer && paid ? payer + ' paid ' + money(paid) + ' · ' + t.short + '. ' : t.short + ' is now ' + (nb.status || 'updated') + '. ') + 'A confirmation email is on its way to both of us.';
+      $('done').classList.remove('hide');
+      setTimeout(function(){ $('done').classList.add('hide'); renderHome(); show('home'); }, 2200);
+    }).catch(function(){ $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save & send confirmation'; err.textContent = 'No connection — nothing was saved. Try again.'; });
+  };
+
+  /* ---------- Start ---------- */
+  var m = location.hash.match(/k=([^&]+)/);
+  if (m) store(KEY, decodeURIComponent(m[1]));
+  code = load(KEY) || '';
+  var origRender = renderHome;
+  renderHome = function(){ if (!$('people').children.length) buildStatic(); origRender(); };
+  if (!code) gate(); else { show('home'); refresh(false); }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+})();
+</script>
+</body>
+</html>
