@@ -220,7 +220,7 @@
 <script>
 (function(){
   var API = 'https://script.google.com/macros/s/AKfycbzk4y9Djrjj2gFKm6fz4DwHKQi6lYaM0-32JL9je1rNfHRpxECRSne5tpWM5h80ZsCa/exec';
-  var KEY = 'gb_code';
+  var KEY = 'gb_code', CACHE = 'gb_data';
   var ICON = {'Unpaid':'⏳','Paid':'✅','Partial':'🟠','Past due':'🔴','Carried over':'↪️'};
   var COLOR = {'Unpaid':['#F7EEDB','#8A5F0E'],'Paid':['#E4EFE8','#2F6B4F'],'Partial':['#F6E6DA','#A4572B'],'Past due':['#F5E1E3','#8C2F39'],'Carried over':['#ECEDEF','#5B6472']};
   var D = null, code = '', cur = null, other = false, status = '', method = '', payer = '';
@@ -257,8 +257,8 @@
     $('refresh').classList.add('spin');
     return api({ api:'bills', t:code }).then(function(j){
       $('refresh').classList.remove('spin');
-      if (!j.ok) { store(KEY, null); gate(j.error); return; }
-      D = j.data; renderHome(); if (!quiet) show('home');
+      if (!j.ok) { store(KEY, null); store(CACHE, null); gate(j.error); return; }
+      D = j.data; store(CACHE, JSON.stringify(D)); renderHome(); if (!quiet) show('home');
     }).catch(function(){ $('refresh').classList.remove('spin'); toast('No connection — try again in a moment'); });
   }
 
@@ -270,7 +270,7 @@
     api({ api:'bills', t:c }).then(function(j){
       $('codeGo').disabled = false; $('codeGo').textContent = 'Open';
       if (!j.ok) { $('codeErr').textContent = j.error || 'That code did not work.'; return; }
-      code = c; store(KEY, c); D = j.data; renderHome(); show('home');
+      code = c; store(KEY, c); D = j.data; store(CACHE, JSON.stringify(D)); renderHome(); show('home');
     }).catch(function(){ $('codeGo').disabled = false; $('codeGo').textContent = 'Open'; $('codeErr').textContent = 'No connection — try again.'; });
   };
 
@@ -310,6 +310,7 @@
   }
   $('refresh').onclick = function(){ refresh(true).then(function(){ toast('Up to date'); }); };
   $('recordBtn').onclick = function(){
+    if (!D) { toast('Loading your bills\u2026'); return; }
     var open = D.bills.filter(function(b){ return ['Unpaid','Partial','Past due'].indexOf(b.status) >= 0; });
     open.sort(function(a,b){ return (a.dueIso||'9') < (b.dueIso||'9') ? -1 : 1; });
     openPay(open[0] ? open[0].key : D.thisMonth + '|' + D.billTypes[0].name, true);
@@ -414,7 +415,7 @@
     api(body).then(function(j){
       $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save & send confirmation';
       if (!j.ok) { err.textContent = j.error || 'Could not save. Try again.'; return; }
-      D = j.data;
+      D = j.data; store(CACHE, JSON.stringify(D));
       var nb = find(j.result.key) || {}, t = info(nb.bill || cur.bill);
       $('doneT').textContent = nb.status === 'Paid' ? 'Payment confirmed' : nb.status === 'Partial' ? 'Partial payment saved' : 'Saved';
       $('doneP').textContent = (payer && paid ? payer + ' paid ' + money(paid) + ' · ' + t.short + '. ' : t.short + ' is now ' + (nb.status || 'updated') + '. ') + 'A confirmation email is on its way to both of us.';
@@ -429,7 +430,13 @@
   code = load(KEY) || '';
   var origRender = renderHome;
   renderHome = function(){ if (!$('people').children.length) buildStatic(); origRender(); };
-  if (!code) gate(); else { show('home'); refresh(false); }
+  if (!code) gate();
+  else {
+    var cached = null; try { cached = JSON.parse(load(CACHE) || 'null'); } catch (e) { cached = null; }
+    if (cached && cached.bills) { D = cached; renderHome(); show('home'); refresh(true); }   // instant, then update quietly
+    else { show('home'); refresh(false); }
+  }
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && code && D) refresh(true); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
 })();
 </script>
