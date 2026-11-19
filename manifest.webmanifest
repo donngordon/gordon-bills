@@ -4,7 +4,7 @@
   "description": "The Gordon family's household bills: what's owed, what's due, and who paid.",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#0E1A2B",
   "theme_color": "#0E1A2B",
   "icons": [

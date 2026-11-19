@@ -93,7 +93,7 @@ async function run() {
       check((await p.textContent('#next')).includes('Gas'), 'next-up should be the late Gas bill');
       check(await p.locator('#openList .card').count() === 3, 'expected 3 open bills');
       check(await p.locator('#paidList .card').count() === 1, 'expected 1 paid bill');
-      check((await p.textContent('.ver')).includes('VERSION 8'), 'version label missing');
+      check((await p.textContent('.ver')).includes('VERSION 9'), 'version label missing');
     });
     await test('Code stays in the address for Add to Home Screen', prof, async p => {
       check((await p.evaluate(() => location.search)).includes('k=' + CODE), 'code not kept in URL');
