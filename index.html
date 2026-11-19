@@ -37,6 +37,27 @@
   .iconbtn svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8}
   .iconbtn.spin svg{animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+  /* Install card */
+  .inst{margin:16px 18px 0;background:linear-gradient(135deg,var(--ink),var(--ink2));border:1px solid rgba(184,151,90,.55);border-radius:20px;padding:14px 14px 14px 14px;display:flex;align-items:center;gap:13px;color:#fff;box-shadow:0 10px 26px rgba(14,26,43,.18);position:relative}
+  .inst img{width:56px;height:56px;border-radius:14px;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+  .inst .tx{flex:1;min-width:0}
+  .inst .t1{font-family:var(--serif);font-size:17px}
+  .inst .t2{font-size:12px;color:#CFC6B5;margin-top:3px;line-height:1.35}
+  .inst .go{flex:none;background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);border:0;border-radius:999px;padding:11px 16px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .inst .go svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:2.4}
+  .inst .x{position:absolute;top:4px;right:8px;background:none;border:0;color:#8C96A6;font-size:18px;cursor:pointer;padding:2px 4px}
+  .gate .inst{margin:22px 0 0;text-align:left}
+  .gate .inst img{width:56px;height:56px;margin:0;padding:0;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+  .sheet{position:fixed;inset:0;background:rgba(14,26,43,.55);display:flex;align-items:flex-end;justify-content:center;z-index:60}
+  .sheet .scard{background:var(--ivory);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:22px 22px calc(26px + var(--safe-bot));box-shadow:0 -10px 30px rgba(0,0,0,.2)}
+  .sheet .hd{display:flex;align-items:center;gap:14px}
+  .sheet .hd img{width:64px;height:64px;border-radius:16px}
+  .sheet h3{font-family:var(--serif);font-size:22px;margin:0;color:var(--ink)}
+  .sheet .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .sheet ol{margin:18px 0 0;padding:0;list-style:none;counter-reset:s}
+  .sheet li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.4}
+  .sheet li:before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--gold);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .sheet .ok{margin-top:16px;width:100%}
   .back{left:12px;right:auto;width:auto;padding:0 16px 0 10px;border-radius:999px;gap:4px;color:var(--gold);font-size:14px;font-weight:700;letter-spacing:.3px}
 
   /* Hero */
@@ -143,6 +164,20 @@
   <input id="codeIn" placeholder="GB-XXXX-XXXX" autocomplete="off" autocapitalize="characters">
   <button class="gold" id="codeGo">Open</button>
   <div class="err" id="codeErr"></div>
+  <div class="inst hide" id="instGate">
+    <img src="icons/icon-192.png" alt="Gordon Bills icon">
+    <div class="tx"><div class="t1">Get the app</div><div class="t2">Install with its own icon.</div></div>
+    <button class="go" data-install><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Install</button>
+  </div>
+</div>
+
+<!-- Install help -->
+<div class="sheet hide" id="instSheet">
+  <div class="scard">
+    <div class="hd"><img src="icons/icon-192.png" alt=""><div><h3>Install Gordon Bills</h3><div class="sub" id="instSub">Adds the app icon to your home screen</div></div></div>
+    <ol id="instSteps"></ol>
+    <button class="gold ok" id="instOk">Got it</button>
+  </div>
 </div>
 
 <!-- Home -->
@@ -156,6 +191,12 @@
     <div class="lbl">Still owed</div>
     <div class="big" id="owed">&nbsp;</div>
     <div class="next" id="next"></div>
+  </div>
+  <div class="inst hide" id="instHome">
+    <img src="icons/icon-192.png" alt="Gordon Bills icon">
+    <div class="tx"><div class="t1">Get the app</div><div class="t2">Put Gordon Bills on your home screen with its own icon.</div></div>
+    <button class="go" data-install><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Install</button>
+    <button class="x" data-dismiss aria-label="Hide">×</button>
   </div>
   <div class="sec">
     <div class="sech"><h2>Needs attention</h2><span id="openCount"></span></div>
@@ -442,6 +483,56 @@
   }
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && code && D) refresh(true); });
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+
+  /* ---------- Install the app (icon on the home screen) ---------- */
+  (function(){
+    var ua = navigator.userAgent || '';
+    var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var isAndroid = /Android/.test(ua);
+    var inApp = /FBAN|FBAV|Instagram|Outlook|GSA\/|Line\/|wv\)|; wv/.test(ua) || (isIOS && !/Safari/.test(ua));
+    var deferred = null, HIDE = 'gb_instHide';
+    function hidden(){ try { return Number(localStorage.getItem(HIDE) || 0) > Date.now(); } catch (e) { return false; } }
+    function setCards(on){ ['instHome','instGate'].forEach(function(id){ var el = $(id); if (el) el.classList.toggle('hide', !on); }); }
+    function mobile(){ return isIOS || isAndroid; }
+    if (standalone) { setCards(false); return; }
+    if (mobile() && !hidden()) setCards(true);
+
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; if (!hidden()) setCards(true); });
+    window.addEventListener('appinstalled', function(){ deferred = null; setCards(false); });
+
+    function steps(list, sub){ $('instSteps').innerHTML = list.map(function(s){ return '<li><span>' + s + '</span></li>'; }).join(''); $('instSub').textContent = sub; $('instSheet').classList.remove('hide'); }
+    function help(){
+      if (isIOS && inApp) return steps([
+        'Tap <b>⋯</b> or the share/compass button and choose <b>Open in Safari</b>.',
+        'In Safari, tap the <b>Share</b> button <b>⬆︎</b> at the bottom of the screen.',
+        'Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.',
+        'The gold <b>Gordon Bills</b> house icon appears on your home screen.'], 'This needs Safari on iPhone');
+      if (isIOS) return steps([
+        'Tap the <b>Share</b> button <b>⬆︎</b> at the bottom of Safari (top right on iPad).',
+        'Scroll down and tap <b>Add to Home Screen</b>.',
+        'Tap <b>Add</b> — the gold <b>Gordon Bills</b> house icon appears on your home screen.'], 'Takes about 10 seconds');
+      if (isAndroid && inApp) return steps([
+        'Tap <b>⋮</b> at the top right and choose <b>Open in Chrome</b>.',
+        'In Chrome, tap the gold <b>Install</b> button again.',
+        'Tap <b>Install</b> — the <b>Gordon Bills</b> icon appears with your apps.'], 'This needs Chrome on Android');
+      return steps([
+        'Tap <b>⋮</b> at the top right of Chrome.',
+        'Tap <b>Install app</b> (or <b>Add to Home screen</b>).',
+        'Tap <b>Install</b> — the <b>Gordon Bills</b> icon appears with your apps.'], 'Takes about 10 seconds');
+    }
+    document.querySelectorAll('[data-install]').forEach(function(b){
+      b.onclick = function(){
+        if (deferred) { var d = deferred; deferred = null; d.prompt(); d.userChoice.then(function(c){ if (c && c.outcome === 'accepted') setCards(false); }); }
+        else help();
+      };
+    });
+    document.querySelectorAll('[data-dismiss]').forEach(function(b){
+      b.onclick = function(){ try { localStorage.setItem(HIDE, String(Date.now() + 7*864e5)); } catch (e) {} setCards(false); };
+    });
+    $('instOk').onclick = function(){ $('instSheet').classList.add('hide'); };
+    $('instSheet').onclick = function(e){ if (e.target === this) this.classList.add('hide'); };
+  })();
 })();
 </script>
 </body>
