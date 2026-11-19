@@ -1,0 +1,84 @@
+# Runs on every push to main (from a phone, the laptop or Claude).
+# 1) Updates the security fingerprint (CSP script hashes) automatically.
+# 2) Runs security checks and all 44 end-to-end tests.
+# 3) Publishes to the live app ONLY if everything passes. A failure emails the repo owner and the live app stays as it was.
+name: Check & publish Gordon Bills
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Security checks & tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update security fingerprint (CSP hashes)
+        run: |
+          python3 tools/csp.py
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Auto-update security fingerprint"
+            git push
+            echo "::notice::Security fingerprint updated automatically"
+          fi
+
+      - name: Security checks
+        run: |
+          set -e
+          if git grep -n -i -E "GB-[A-Z0-9]{4}-[A-Z0-9]{4}|5da7ccbb|password|apikey|secret" -- . ':!*.png' ':!SECURITY.md' ':!tests/*' ':!.github/*' | grep -v "GB-XXXX-XXXX"; then
+            echo "::error::Possible secret found in the public code (see lines above)"; exit 1
+          fi
+          for f in index.html install.html; do
+            grep -q 'http-equiv="Content-Security-Policy"' "$f" || { echo "::error::$f is missing its Content-Security-Policy"; exit 1; }
+            grep -q '<meta name="referrer" content="no-referrer">' "$f" || { echo "::error::$f is missing its referrer policy"; exit 1; }
+          done
+          python3 -c "import json;json.load(open('manifest.webmanifest'))" || { echo "::error::manifest.webmanifest is not valid JSON"; exit 1; }
+          echo "Security checks passed"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install test browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Run all end-to-end tests
+        run: node tests/run-tests.js
+
+      - name: Package the app
+        run: |
+          mkdir -p _site
+          cp -r index.html install.html sw.js manifest.webmanifest icons SECURITY.md _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publish:
+    name: Publish to the live app
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
