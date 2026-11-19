@@ -135,6 +135,31 @@
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .err{color:#8C2F39;text-align:center;font-size:14px;margin-top:12px;min-height:18px}
 
+  /* Questions & comments */
+  .conv{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px}
+  .conv .ch{display:flex;justify-content:space-between;align-items:center}
+  .conv .ch b{font-family:var(--serif);font-size:17px;color:var(--ink);font-weight:600}
+  .conv .ch span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;padding:4px 9px;border-radius:999px}
+  .conv .ch .open{background:#F6E6DA;color:#A4572B} .conv .ch .ok{background:#E4EFE8;color:#2F6B4F}
+  .bub{margin-top:12px;max-width:88%;padding:10px 13px;border-radius:16px;font-size:15px;line-height:1.4;background:#F4EEE3;color:var(--text)}
+  .bub.me{margin-left:auto;background:var(--ink);color:#fff;border-bottom-right-radius:6px}
+  .bub.them{border-bottom-left-radius:6px}
+  .bub small{display:block;font-size:11px;opacity:.7;margin-bottom:3px;letter-spacing:.3px}
+  .bub.res{max-width:100%;text-align:center;background:#E4EFE8;color:#2F6B4F;font-size:13px;font-weight:700}
+  .conv .none{font-size:14px;color:var(--muted);margin-top:8px}
+  .conv .acts{display:flex;gap:8px;margin-top:14px}
+  .conv .acts button{flex:1;border-radius:999px;padding:12px 10px;font-size:14px;font-weight:800;cursor:pointer;border:1.5px solid var(--gold);background:#FBF5EA;color:var(--ink)}
+  .conv .acts .solid{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+  .qtag{display:inline-block;margin-left:6px;font-size:10px;letter-spacing:1px;font-weight:800;padding:3px 7px;border-radius:999px;background:#F6E6DA;color:#A4572B;vertical-align:middle}
+  .ask textarea{width:100%;margin-top:14px;padding:13px 14px;font-size:16px;font-family:inherit;border:1px solid var(--line);border-radius:14px;background:#fff;outline:none;min-height:96px;resize:none}
+  .ask textarea:focus{border-color:var(--gold)}
+  .ask .who{display:flex;gap:8px;margin-top:14px}
+  .ask .who div{flex:1;text-align:center;padding:11px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer}
+  .ask .who div.on{border-color:var(--gold);background:#FBF5EA;box-shadow:0 0 0 3px rgba(184,151,90,.18)}
+  .ask .row{display:flex;gap:10px;margin-top:16px}
+  .ask .row button{flex:1}
+  .ask .cancel{background:transparent;border:1.5px solid var(--line);border-radius:999px;font-weight:700;font-size:15px;cursor:pointer;padding:14px}
+
   /* Safari polish */
   input,textarea,button,select{-webkit-appearance:none;appearance:none;border-radius:inherit}
   .f input,.f textarea{border-radius:12px}
@@ -192,6 +217,18 @@
   </div>
 </div>
 
+<!-- Ask a question -->
+<div class="sheet hide ask" id="askSheet">
+  <div class="scard">
+    <h3 id="askT">Ask about this bill</h3>
+    <div class="sub" id="askS" style="margin-top:4px"></div>
+    <div class="who" id="askWho"></div>
+    <textarea id="askText" placeholder="e.g. Didn't we cancel this? Why is it $197?"></textarea>
+    <div class="err" id="askErr"></div>
+    <div class="row"><button class="cancel" id="askCancel">Cancel</button><button class="gold" id="askSend">Send</button></div>
+  </div>
+</div>
+
 <!-- Install help -->
 <div class="sheet hide" id="instSheet">
   <div class="scard">
@@ -226,7 +263,7 @@
     <div id="paidList"></div>
     <div class="sech"><h2>Coming up</h2><span>Next 45 days</span></div>
     <div id="upList"></div>
-    <div class="ver">GORDON BILLS · VERSION 5</div>
+    <div class="ver">GORDON BILLS · VERSION 6</div>
   </div>
   <div class="dock"><div class="in">
     <button class="gold" id="recordBtn">+ Record a payment</button>
@@ -242,6 +279,7 @@
   </div>
   <div class="body">
     <div class="phero"><div class="m" id="pm"></div><div class="a" id="pa"></div><div class="d" id="pd"></div><div id="pb"></div></div>
+    <div class="conv hide" id="conv"></div>
 
     <div id="pickers">
       <div class="lab">Which bill?</div><div class="scroll" id="billChips"></div>
@@ -347,7 +385,7 @@
       amt = b.amount ? money(owe(b)) : '—'; }
     var pill = st ? '<div><span class="pill" style="background:' + COLOR[st][0] + ';color:' + COLOR[st][1] + '">' + st.toUpperCase() + '</span></div>' : '';
     return '<div class="card" data-key="' + esc(b.key) + '"><div class="tile">' + t.icon + '</div><div class="mid"><div class="nm">' + esc(t.short) +
-      ' <span style="font-family:var(--sans);font-size:12px;color:var(--muted);font-weight:400">' + esc(label(b.mk)) + '</span></div><div class="sub ' + cls + '">' + esc(sub) + '</div></div>' +
+      ' <span style="font-family:var(--sans);font-size:12px;color:var(--muted);font-weight:400">' + esc(label(b.mk)) + '</span></div><div class="sub ' + cls + '">' + esc(sub) + '</div>' + (thread(b).open ? '<div><span class="qtag" style="margin:5px 0 0">💬 QUESTION · NEEDS ANSWER</span></div>' : '') + '</div>' +
       '<div class="rt"><div class="amt">' + amt + '</div>' + pill + '</div></div>';
   }
   function renderHome(){
@@ -422,7 +460,7 @@
     $('pb').innerHTML = b && b.status ? '<span class="pill" style="margin-top:10px;background:' + COLOR[b.status][0] + ';color:' + COLOR[b.status][1] + '">' + b.status.toUpperCase() + '</span>' : '';
     $('amount').value = (b && b.amount) || ''; $('due').value = (b && b.dueIso) || '';
     $('paidAmt').value = ''; $('paidDate').value = ''; $('conf').value = (b && b.conf) || ''; $('notes').value = (b && b.notes) || '';
-    setPayer(''); setMethod((b && b.method) || ''); setStatus(''); renderQuick(b); renderPickers();
+    setPayer(''); setMethod((b && b.method) || ''); setStatus(''); renderQuick(b); renderPickers(); renderConv(b);
   }
   function renderQuick(b){
     var q = $('quick'); q.innerHTML = '';
@@ -490,6 +528,71 @@
       setTimeout(function(){ $('done').classList.add('hide'); if (history.state && history.state.gb === 'pay') history.back(); else goHome(); }, 2200);
     }).catch(function(){ $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save & send confirmation'; err.textContent = 'No connection — nothing was saved. Try again.'; });
   };
+
+  /* ---------- Questions & comments (saved on the bill's notes) ---------- */
+  var askKind = 'question', asker = '';
+  function thread(b){
+    var out = { items: [], open: false }, notes = (b && b.notes) || '';
+    notes.split(/\n/).forEach(function(l){
+      var m = l.match(/^(💬|✓)\s*(.+?)\s·\s(.+?)\s—\s(.*)$/);
+      if (!m) return;
+      var it = { res: m[1] === '✓', who: m[2], when: m[3], text: m[4] };
+      out.items.push(it); out.open = !it.res;
+    });
+    return out;
+  }
+  function stamp(){ var d = new Date(); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ', ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+  function renderConv(b){
+    var c = $('conv');
+    if (!b || other) { c.classList.add('hide'); return; }
+    var th = thread(b), me = load('gb_me') || '';
+    var h = '<div class="ch"><b>💬 Questions &amp; comments</b>' + (th.items.length ? (th.open ? '<span class="open">Needs answer</span>' : '<span class="ok">Resolved</span>') : '') + '</div>';
+    if (!th.items.length) h += '<div class="none">Something look off on this bill? Ask here — we both get an email.</div>';
+    th.items.forEach(function(it){
+      if (it.res) h += '<div class="bub res">✓ Resolved by ' + esc(it.who) + ' · ' + esc(it.when) + (it.text ? '<br>' + esc(it.text) : '') + '</div>';
+      else h += '<div class="bub ' + (it.who === me ? 'me' : 'them') + '"><small>' + esc(it.who) + ' · ' + esc(it.when) + '</small>' + esc(it.text) + '</div>';
+    });
+    h += '<div class="acts">' + (th.items.length
+      ? '<button class="solid" data-k="reply">Reply</button>' + (th.open ? '<button data-k="resolved">✓ Mark resolved</button>' : '<button data-k="question">New question</button>')
+      : '<button class="solid" data-k="question">💬 Ask a question</button>') + '</div>';
+    c.innerHTML = h; c.classList.remove('hide');
+    [].forEach.call(c.querySelectorAll('[data-k]'), function(btn){ btn.onclick = function(){ openAsk(btn.getAttribute('data-k')); }; });
+  }
+  function setAsker(p){ asker = p; store('gb_me', p); [].forEach.call($('askWho').children, function(d){ d.classList.toggle('on', d.getAttribute('data-v') === p); }); }
+  function openAsk(kind){
+    askKind = kind; var t = info(cur.bill);
+    $('askT').textContent = kind === 'reply' ? 'Reply' : kind === 'resolved' ? 'Mark as resolved' : 'Ask about this bill';
+    $('askS').textContent = t.short + ' · ' + label(cur.mk);
+    $('askText').placeholder = kind === 'resolved' ? 'Optional note, e.g. "Called Verizon — final bill, OK to pay."' : kind === 'reply' ? 'Type your answer…' : "e.g. Didn't we cancel this? Why is it this much?";
+    $('askSend').textContent = kind === 'resolved' ? 'Mark resolved' : 'Send';
+    var w = $('askWho'); w.innerHTML = '';
+    (D.people || ['Donn','Ashley']).forEach(function(p){ var d = document.createElement('div'); d.setAttribute('data-v', p); d.textContent = p; d.onclick = function(){ setAsker(p); }; w.appendChild(d); });
+    setAsker(load('gb_me') || ''); $('askText').value = ''; $('askErr').textContent = '';
+    $('askSheet').classList.remove('hide'); setTimeout(function(){ $('askText').focus(); }, 250);
+  }
+  $('askCancel').onclick = function(){ $('askSheet').classList.add('hide'); };
+  $('askSheet').onclick = function(e){ if (e.target === this) this.classList.add('hide'); };
+  $('askSend').onclick = function(){
+    var text = $('askText').value.trim().replace(/\s*\n\s*/g, ' '), err = $('askErr'); err.textContent = '';
+    if (!asker) { err.textContent = 'Tap who is writing.'; return; }
+    if (!text && askKind !== 'resolved') { err.textContent = 'Type your question first.'; return; }
+    var b = find(cur.key); if (!b) { err.textContent = 'Save this bill first.'; return; }
+    var line = (askKind === 'resolved' ? '✓ ' : '💬 ') + asker + ' · ' + stamp() + ' — ' + text.replace(/—/g, '-');
+    var notes = ((b.notes || '').replace(/\s+$/, '') + '\n' + line).replace(/^\n/, '');
+    var body = { api:'save', t:code, key:b.key, month:b.mk, newBill:'', status:b.status || 'Unpaid', paidBy:b.paidBy || '', method:b.method || '',
+      amount: b.amount ? String(b.amount) : '', due:b.dueIso || '', paidAmt: b.paidAmt ? String(b.paidAmt) : '', paidDate:b.paidDate || '', conf:b.conf || '', notes:notes };
+    $('askSend').disabled = true; $('askSend').textContent = 'Sending…';
+    api(body).then(function(j){
+      $('askSend').disabled = false; openAskLabel();
+      if (!j.ok) { err.textContent = j.error || 'Could not send. Try again.'; return; }
+      D = j.data; store(CACHE, JSON.stringify(D)); $('askSheet').classList.add('hide');
+      renderConv(find(cur.key)); $('notes').value = (find(cur.key) || {}).notes || notes; renderHome();
+      $('doneT').textContent = askKind === 'resolved' ? 'Marked resolved' : askKind === 'reply' ? 'Reply sent' : 'Question sent';
+      $('doneP').textContent = 'Saved on ' + info(cur.bill).short + ' · an email is on its way to both of us.';
+      $('done').classList.remove('hide'); setTimeout(function(){ $('done').classList.add('hide'); }, 1800);
+    }).catch(function(){ $('askSend').disabled = false; openAskLabel(); err.textContent = 'No connection — nothing was sent. Try again.'; });
+  };
+  function openAskLabel(){ $('askSend').textContent = askKind === 'resolved' ? 'Mark resolved' : 'Send'; }
 
   /* ---------- Start ---------- */
   var m = location.hash.match(/k=([^&]+)/);
