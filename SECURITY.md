@@ -28,17 +28,17 @@ Run the tests yourself: `node tests/run-tests.js` (needs Node and Playwright).
 | **Protect – privacy** | `Referrer-Policy: no-referrer` so the family code in the address is never sent to other sites | PR.DS, SC-28 |
 | **Detect** | Every payment, status change and question sends a confirmation email to both of us and is time-stamped in the Sheet | DE.CM, AU-2, AU-3 |
 | **Respond** | Email-limit (Google quota) errors are detected and handled; the app confirms whether the save went through instead of showing a raw error | RS.MI, SI-11 |
-| **Recover** | Google Sheets version history; nightly backup copy (see open items); app works offline from cache | RC.RP, CP-9, CP-10 |
+| **Recover** | Google Sheets version history; weekly backup copy (see open items); app works offline from cache | RC.RP, CP-9, CP-10 |
 | **Updates** | "New update ready" banner — tap to load the newest version; tested end-to-end | PR.PS-02, SI-2 |
 
 ## Open items (need the Apps Script service updated from the laptop)
 
 1. **Rate-limit wrong family-code attempts** on the server (AC-7). The code is 8 random characters (~41 bits) but should still lock out after repeated failures.
 2. **Never fail a save because of email**; queue emails and send after Google's daily limit resets (SC-5 availability).
-3. **Nightly backup** of the bill tracker Sheet to a dated copy in Google Drive, keeping 30 days (CP-9).
+3. **Weekly backup** of the bill tracker Sheet to a dated copy in Google Drive, keeping 12 weeks (CP-9).
 4. **Rotate the family code** if a phone is lost (IA-5). After rotating, each phone signs in once with the new code.
 5. Fewer emails per edit (combine quick back-to-back changes) to stay under Google's limit.
 
 ## Review cadence
 
-Automated tests and this review run nightly; results are emailed and on the shared calendar.
+Automated tests and this review run every Sunday night; results are emailed to both of us and the run is on the shared calendar.
