@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1N3ZxlS8vzPZ13IQptcJ5jCWqa0eVA8juTsq/FA3gy8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Gordon Bills</title>
 <meta name="theme-color" content="#0E1A2B">
@@ -18,7 +20,7 @@
 <style>
   :root{
     --ink:#0E1A2B; --ink2:#1B2A42; --gold:#B8975A; --gold2:#C9A668; --goldDeep:#8E713C;
-    --champ:#F4EEE3; --ivory:#FBF8F2; --text:#1F1B16; --muted:#8A8173; --line:#E8E1D4;
+    --champ:#F4EEE3; --ivory:#FBF8F2; --text:#1F1B16; --muted:#6E6658; --line:#E8E1D4;
     --serif:'Playfair Display',Georgia,'Times New Roman',serif;
     --sans:Lato,'Helvetica Neue',Arial,sans-serif;
     --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
@@ -135,6 +137,14 @@
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .err{color:#8C2F39;text-align:center;font-size:14px;margin-top:12px;min-height:18px}
 
+  /* New version banner */
+  .upd{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + var(--safe-top));z-index:70;width:calc(100% - 24px);max-width:520px;display:flex;align-items:center;gap:12px;
+    background:linear-gradient(135deg,var(--ink),var(--ink2));color:#fff;border:1px solid var(--gold);border-radius:18px;padding:12px 12px 12px 16px;box-shadow:0 14px 34px rgba(0,0,0,.35);cursor:pointer;text-align:left;font:inherit;animation:drop .35s cubic-bezier(.2,1.2,.4,1)}
+  .upd .spark{font-size:22px} .upd span:nth-child(2){flex:1} .upd b{display:block;font-family:var(--serif);font-size:16px;font-weight:600}
+  .upd small{display:block;color:#C9CFD8;font-size:12px;margin-top:2px}
+  .upd .go{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);font-weight:900;font-size:14px;border-radius:999px;padding:10px 16px}
+  @keyframes drop{from{transform:translate(-50%,-30px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+
   /* Questions & comments */
   .conv{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px}
   .conv .ch{display:flex;justify-content:space-between;align-items:center}
@@ -219,6 +229,9 @@
   </div>
 </div>
 
+<!-- New version banner -->
+<button class="upd hide" id="upd"><span class="spark">✨</span><span><b>New update ready</b><small>Tap to get the newest Gordon Bills</small></span><span class="go">Update</span></button>
+
 <!-- Ask a question -->
 <div class="sheet hide ask" id="askSheet">
   <div class="scard">
@@ -265,7 +278,7 @@
     <div id="paidList"></div>
     <div class="sech"><h2>Coming up</h2><span>Next 45 days</span></div>
     <div id="upList"></div>
-    <div class="ver">GORDON BILLS · VERSION 7</div>
+    <div class="ver">GORDON BILLS · VERSION 8<br><a href="#" id="checkUpd" style="color:inherit">Check for updates</a> · <a href="#" id="signOut" style="color:inherit">Sign out of this phone</a></div>
   </div>
   <div class="dock"><div class="in">
     <button class="gold" id="recordBtn">+ Record a payment</button>
@@ -340,6 +353,7 @@
     return Math.round((Date.UTC(+a[0],+a[1]-1,+a[2]) - Date.UTC(+b[0],+b[1]-1,+b[2])) / 86400000); }
   function niceDate(iso){ if (!iso) return ''; var p = iso.split('-'); return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
   function label(mk){ return new Date(+mk.slice(0,4), +mk.slice(5,7)-1, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'}); }
+  function col(s){ return COLOR[s] || ['#ECEDEF','#5B6472']; }
   function info(name){ var t = (D.billTypes || []).filter(function(b){ return b.name === name; })[0]; return t || {name:name, short:name, icon:'🧾'}; }
   function owe(b){ return b.status === 'Partial' ? Math.max(0, (b.amount||0) - (b.paidAmt||0)) : (b.amount||0); }
   function dueText(b){ var d = daysTo(b.dueIso);
@@ -377,6 +391,12 @@
     return r ? 'GB-' + r.slice(0,4) + (r.length > 4 ? '-' + r.slice(4) : '') : '';
   }
 
+  $('signOut').onclick = function(e){ e.preventDefault();
+    if (window.confirm && !window.confirm('Sign out of Gordon Bills on this phone? You will need the family code to open it again.')) return;
+    store(KEY, null); store(CACHE, null); store('gb_me', null); code = ''; D = null;
+    try { history.replaceState(null, '', location.pathname); } catch (x) {}
+    $('codeIn').value = ''; gate('Signed out of this phone.'); };
+
   /* ---------- Gate ---------- */
   function gate(msg){ show('gate'); $('codeErr').textContent = msg || ''; }
   $('codeIn').oninput = function(){ var v = fmtCode($('codeIn').value); if (v !== $('codeIn').value) $('codeIn').value = v; $('codeErr').textContent = ''; };
@@ -402,8 +422,8 @@
     else { var d = daysTo(b.dueIso); sub = dueText(b); if (d !== null && d < 0) cls = 'late'; else if (d !== null && d <= 3) cls = 'soon';
       if (b.status === 'Partial') sub = money(b.paidAmt) + ' paid' + (b.paidBy ? ' by ' + b.paidBy : '') + ' · ' + sub;
       amt = b.amount ? money(owe(b)) : '—'; }
-    var pill = st ? '<div><span class="pill" style="background:' + COLOR[st][0] + ';color:' + COLOR[st][1] + '">' + st.toUpperCase() + '</span></div>' : '';
-    return '<div class="card" data-key="' + esc(b.key) + '"><div class="tile">' + t.icon + '</div><div class="mid"><div class="nm">' + esc(t.short) +
+    var pill = st ? '<div><span class="pill" style="background:' + col(st)[0] + ';color:' + col(st)[1] + '">' + st.toUpperCase() + '</span></div>' : '';
+    return '<div class="card" data-key="' + esc(b.key) + '"><div class="tile">' + esc(t.icon) + '</div><div class="mid"><div class="nm">' + esc(t.short) +
       ' <span style="font-family:var(--sans);font-size:12px;color:var(--muted);font-weight:400">' + esc(label(b.mk)) + '</span></div><div class="sub ' + cls + '">' + esc(sub) + '</div>' + (thread(b).open ? '<div><span class="qtag" style="margin:5px 0 0">💬 QUESTION · NEEDS ANSWER</span></div>' : '') + '</div>' +
       '<div class="rt"><div class="amt">' + amt + '</div>' + pill + '</div></div>';
   }
@@ -415,7 +435,7 @@
     $('owed').textContent = total < 0.005 ? 'All clear ✨' : money(total);
     $('owed').classList.toggle('clear', total < 0.005);
     var nxt = open.filter(function(b){ return b.dueIso; })[0];
-    $('next').innerHTML = nxt ? 'Next up: <b>' + info(nxt.bill).icon + ' ' + esc(info(nxt.bill).short) + ' ' + money(owe(nxt)) + '</b> · ' + esc(dueText(nxt)) :
+    $('next').innerHTML = nxt ? 'Next up: <b>' + esc(info(nxt.bill).icon) + ' ' + esc(info(nxt.bill).short) + ' ' + money(owe(nxt)) + '</b> · ' + esc(dueText(nxt)) :
       (open.length ? open.length + ' bill' + (open.length > 1 ? 's' : '') + ' waiting for an amount or date' : 'Every bill is paid. Beautiful.');
     $('openCount').textContent = open.length ? open.length + ' open' : '';
     $('openList').innerHTML = open.length ? open.map(function(b){ return cardHtml(b,'open'); }).join('') : '<div class="empty">Nothing needs attention ✨</div>';
@@ -465,7 +485,7 @@
     if (months.indexOf(cur.mk) < 0) months.push(cur.mk);
     months.forEach(function(mk){ var b = find(mk + '|' + cur.bill), d = document.createElement('div');
       d.className = 'chip small' + (mk === cur.mk ? ' on' : '');
-      d.innerHTML = (b && b.status ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;background:' + COLOR[b.status][1] + '"></span>' : '') + label(mk);
+      d.innerHTML = (b && b.status ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;background:' + col(b.status)[1] + '"></span>' : '') + label(mk);
       d.onclick = function(){ cur.mk = mk; cur.key = mk + '|' + cur.bill; fill(); };
       mc.appendChild(d); });
     var on = mc.querySelector('.on'); if (on && on.scrollIntoView) on.scrollIntoView({inline:'center', block:'nearest'});
@@ -476,7 +496,7 @@
     $('pm').textContent = t.short + ' · ' + label(cur.mk);
     $('pa').textContent = b && b.amount ? money(owe(b)) : '—';
     $('pd').textContent = b ? (b.status === 'Partial' ? money(b.paidAmt) + ' already paid · ' : '') + dueText(b) : 'New bill';
-    $('pb').innerHTML = b && b.status ? '<span class="pill" style="margin-top:10px;background:' + COLOR[b.status][0] + ';color:' + COLOR[b.status][1] + '">' + b.status.toUpperCase() + '</span>' : '';
+    $('pb').innerHTML = b && b.status ? '<span class="pill" style="margin-top:10px;background:' + col(b.status)[0] + ';color:' + col(b.status)[1] + '">' + b.status.toUpperCase() + '</span>' : '';
     $('amount').value = (b && b.amount) || ''; $('due').value = (b && b.dueIso) || '';
     $('paidAmt').value = ''; $('paidDate').value = ''; $('conf').value = (b && b.conf) || ''; $('notes').value = (b && b.notes) || '';
     setPayer(''); setMethod((b && b.method) || ''); setStatus(''); renderQuick(b); renderPickers(); renderConv(b);
@@ -494,7 +514,7 @@
       d.innerHTML = '<div class="av">' + (p === 'Other' ? '+' : esc(p.charAt(0))) + '</div>' + esc(p);
       d.onclick = function(){ if (p === 'Other') { setPayer($('whoOther').value || '', true); $('whoOther').focus(); } else setPayer(p); }; pp.appendChild(d); });
     var ss = $('status'); ss.innerHTML = '';
-    D.statuses.forEach(function(s){ var d = document.createElement('div'); d.className = 'st'; d.setAttribute('data-v', s); d.innerHTML = '<i>' + ICON[s] + '</i>' + s;
+    D.statuses.forEach(function(s){ var d = document.createElement('div'); d.className = 'st'; d.setAttribute('data-v', s); d.innerHTML = '<i>' + esc(ICON[s] || '•') + '</i>' + esc(s);
       d.onclick = function(){ setStatus(s, true); }; ss.appendChild(d); });
     var mm = $('method'); mm.innerHTML = '';
     D.methods.forEach(function(m){ var d = document.createElement('div'); d.className = 'chip small'; d.setAttribute('data-v', m); d.textContent = m;
@@ -660,9 +680,12 @@
     }).catch(function(){});
     navigator.serviceWorker.addEventListener('controllerchange', function(){
       if (!hadCtrl || reloaded) return;
-      if (!$('pay').classList.contains('hide')) return;   // never interrupt a payment being typed
-      reloaded = true; location.reload();
+      hadCtrl = true; $('upd').classList.remove('hide');   // a new version was pushed: offer it
     });
+    $('upd').onclick = function(){ reloaded = true; $('upd').querySelector('b').textContent = 'Updating…'; location.reload(); };
+    $('checkUpd').onclick = function(e){ e.preventDefault(); var el = $('checkUpd'); el.textContent = 'Checking…';
+      navigator.serviceWorker.getRegistration().then(function(r){ return r && r.update(); }).catch(function(){}).then(function(){
+        setTimeout(function(){ if ($('upd').classList.contains('hide')) { el.textContent = 'You have the newest version ✓'; setTimeout(function(){ el.textContent = 'Check for updates'; }, 2500); } }, 1500); }); };
   }
 
   /* iPhone app: swipe in from the left edge to go back */
