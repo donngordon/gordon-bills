@@ -28,16 +28,17 @@ Run the tests yourself: `node tests/run-tests.js` (needs Node and Playwright).
 | **Protect – privacy** | `Referrer-Policy: no-referrer` so the family code in the address is never sent to other sites | PR.DS, SC-28 |
 | **Detect** | Every payment, status change and question sends a confirmation email to both of us and is time-stamped in the Sheet | DE.CM, AU-2, AU-3 |
 | **Respond** | Email-limit (Google quota) errors are detected and handled; the app confirms whether the save went through instead of showing a raw error | RS.MI, SI-11 |
-| **Recover** | Google Sheets version history; weekly backup copy (see open items); app works offline from cache | RC.RP, CP-9, CP-10 |
+| **Recover** | Weekly dated backup copies in Google Drive (12 kept) plus Google Sheets version history; app works offline from cache | RC.RP, CP-9, CP-10 |
 | **Updates** | "New update ready" banner — tap to load the newest version; tested end-to-end | PR.PS-02, SI-2 |
 
-## Open items (need the Apps Script service updated from the laptop)
+## Completed November 19, 2026 (email & automation service, deployment version 9)
 
-1. **Rate-limit wrong family-code attempts** on the server (AC-7). The code is 8 random characters (~41 bits) but should still lock out after repeated failures.
-2. **Never fail a save because of email**; queue emails and send after Google's daily limit resets (SC-5 availability).
-3. **Weekly backup** of the bill tracker Sheet to a dated copy in Google Drive, keeping 12 weeks (CP-9).
-4. **Rotate the family code** if a phone is lost (IA-5). After rotating, each phone signs in once with the new code.
-5. Fewer emails per edit (combine quick back-to-back changes) to stay under Google's limit.
+1. **Wrong family codes are locked out**: 20 wrong codes within 15 minutes locks the app for 15 minutes and emails a security alert (AC-7).
+2. **Saves never fail because of email**: emails are queued and go out automatically once Google's daily limit resets (SC-5 availability).
+3. **Weekly backup**: every Sunday at 10 PM a dated copy of the bill tracker is saved to Google Drive › *Gordon Bills Backups*, keeping 12 weeks (CP-9). First backup: Nov 19, 2026.
+4. **Family code rotation**: run `rotateFamilyCode` if a phone is lost; a fresh download email goes out with the new code (IA-5).
+5. **Fewer emails**: quick back-to-back changes to the same bill are combined into one email.
+6. Every email links to the app install page; questions arrive as **"💬 Question · … · from …"**.
 
 ## Review cadence
 
