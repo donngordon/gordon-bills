@@ -37,7 +37,7 @@
   .iconbtn svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8}
   .iconbtn.spin svg{animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .back{left:12px;right:auto}
+  .back{left:12px;right:auto;width:auto;padding:0 16px 0 10px;border-radius:999px;gap:4px;color:var(--gold);font-size:14px;font-weight:700;letter-spacing:.3px}
 
   /* Hero */
   .hero{margin:-1px 0 0;background:linear-gradient(160deg,var(--ink2),var(--ink));color:#fff;padding:6px 22px 28px}
@@ -75,6 +75,7 @@
   .ghost{display:block;margin:12px auto 0;background:none;border:0;color:var(--goldDeep);font-size:14px;letter-spacing:.3px;cursor:pointer}
 
   /* Pay view */
+  .pay .top{padding-top:calc(70px + var(--safe-top))}
   .pay .body{padding:20px 18px 10px}
   .phero{background:#fff;border-radius:22px;text-align:center;padding:24px 16px;box-shadow:0 8px 28px rgba(14,26,43,.08);margin-top:-18px;position:relative}
   .phero .m{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
@@ -172,7 +173,7 @@
 <!-- Pay -->
 <div id="pay" class="wrap pay hide">
   <div class="top" style="text-align:center;padding-bottom:40px">
-    <button class="iconbtn back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="iconbtn back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
     <div class="kick">Record a payment</div>
     <div class="title" id="payTitle">Gordon Bills</div>
   </div>
@@ -315,7 +316,9 @@
     open.sort(function(a,b){ return (a.dueIso||'9') < (b.dueIso||'9') ? -1 : 1; });
     openPay(open[0] ? open[0].key : D.thisMonth + '|' + D.billTypes[0].name, true);
   };
-  $('backBtn').onclick = function(){ renderHome(); show('home'); };
+  function goHome(){ renderHome(); show('home'); }
+  $('backBtn').onclick = function(){ if (history.state && history.state.gb === 'pay') history.back(); else goHome(); };
+  window.addEventListener('popstate', function(){ if (!$('pay').classList.contains('hide')) goHome(); });
 
   /* ---------- Pay ---------- */
   function find(key){ return D.bills.filter(function(b){ return b.key === key; })[0] || null; }
@@ -324,6 +327,7 @@
     cur = { key:key, mk:key.slice(0,7), bill:key.slice(8) };
     $('pickers').classList.toggle('hide', !pickers);
     fill(); show('pay');
+    try { if (!(history.state && history.state.gb === 'pay')) history.pushState({ gb: 'pay' }, '', location.pathname + location.search); } catch (e) {}
   }
   function allNames(){ var n = D.billTypes.map(function(b){ return b.name; }); D.bills.forEach(function(b){ if (n.indexOf(b.bill) < 0) n.push(b.bill); }); return n; }
   function renderPickers(){
@@ -420,7 +424,7 @@
       $('doneT').textContent = nb.status === 'Paid' ? 'Payment confirmed' : nb.status === 'Partial' ? 'Partial payment saved' : 'Saved';
       $('doneP').textContent = (payer && paid ? payer + ' paid ' + money(paid) + ' · ' + t.short + '. ' : t.short + ' is now ' + (nb.status || 'updated') + '. ') + 'A confirmation email is on its way to both of us.';
       $('done').classList.remove('hide');
-      setTimeout(function(){ $('done').classList.add('hide'); renderHome(); show('home'); }, 2200);
+      setTimeout(function(){ $('done').classList.add('hide'); if (history.state && history.state.gb === 'pay') history.back(); else goHome(); }, 2200);
     }).catch(function(){ $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save & send confirmation'; err.textContent = 'No connection — nothing was saved. Try again.'; });
   };
 
