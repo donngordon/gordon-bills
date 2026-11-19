@@ -58,7 +58,9 @@
   .sheet li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.4}
   .sheet li:before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--gold);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
   .sheet .ok{margin-top:16px;width:100%}
-  .back{left:12px;right:auto;width:auto;padding:0 16px 0 10px;border-radius:999px;gap:4px;color:var(--gold);font-size:14px;font-weight:700;letter-spacing:.3px}
+  .back{left:12px;right:auto;width:auto;height:44px;padding:0 18px 0 8px;border-radius:999px;gap:6px;background:var(--gold);border:0;color:var(--ink);font-size:16px;font-weight:800;letter-spacing:.3px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .back svg{width:24px !important;height:24px !important;stroke:var(--ink) !important;stroke-width:2.6 !important}
+  .ver{text-align:center;font-size:11px;color:var(--muted);letter-spacing:1px;margin:26px 0 0}
 
   /* Hero */
   .hero{margin:-1px 0 0;background:linear-gradient(160deg,var(--ink2),var(--ink));color:#fff;padding:6px 22px 28px}
@@ -205,6 +207,7 @@
     <div id="paidList"></div>
     <div class="sech"><h2>Coming up</h2><span>Next 45 days</span></div>
     <div id="upList"></div>
+    <div class="ver">GORDON BILLS · VERSION 5</div>
   </div>
   <div class="dock"><div class="in">
     <button class="gold" id="recordBtn">+ Record a payment</button>
@@ -214,7 +217,7 @@
 <!-- Pay -->
 <div id="pay" class="wrap pay hide">
   <div class="top" style="text-align:center;padding-bottom:40px">
-    <button class="iconbtn back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
+    <button class="iconbtn back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>Back</button>
     <div class="kick">Record a payment</div>
     <div class="title" id="payTitle">Gordon Bills</div>
   </div>
@@ -482,7 +485,26 @@
     else { show('home'); refresh(false); }
   }
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && code && D) refresh(true); });
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+  /* Updates: phones pick up the newest app by themselves */
+  if ('serviceWorker' in navigator) {
+    var hadCtrl = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      reg.update();
+      document.addEventListener('visibilitychange', function(){ if (!document.hidden) reg.update(); });
+    }).catch(function(){});
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if (!hadCtrl || reloaded) return;
+      if (!$('pay').classList.contains('hide')) return;   // never interrupt a payment being typed
+      reloaded = true; location.reload();
+    });
+  }
+
+  /* iPhone app: swipe in from the left edge to go back */
+  (function(){
+    var sx = 0, sy = 0, on = false;
+    document.addEventListener('touchstart', function(e){ var t = e.touches[0]; on = t.clientX < 28 && !$('pay').classList.contains('hide'); sx = t.clientX; sy = t.clientY; }, {passive:true});
+    document.addEventListener('touchend', function(e){ if (!on) return; on = false; var t = e.changedTouches[0]; if (t.clientX - sx > 70 && Math.abs(t.clientY - sy) < 60) $('backBtn').click(); }, {passive:true});
+  })();
 
   /* ---------- Install the app (icon on the home screen) ---------- */
   (function(){
